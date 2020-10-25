@@ -1,6 +1,6 @@
 import socket
 import sys
-import util
+from sources import util
 
 from Crypto.Cipher import AES
 
@@ -76,7 +76,7 @@ def main():
         server_sock.close()
         b_sock.close()
     except IndexError:
-        print('Parameters format: python A.py server_host server_port b_host b_port')
+        print('Parameters format: python A.py server_host server_port b_host b_port filename')
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 import socket
 import sys
-import util
+from sources import util
 
 from Crypto.Cipher import AES
 
