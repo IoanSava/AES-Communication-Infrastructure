@@ -1,5 +1,6 @@
 import socket
 import sys
+import util
 
 from Crypto.Cipher import AES
 
@@ -27,20 +28,6 @@ def socket_bind(host, port, sock):
         socket_bind(host, port, sock)
 
 
-def unpad(block):
-    padding_length = ord(block[-1])
-    if 0 < padding_length < BLOCK_SIZE:
-        return block[:-padding_length]
-    return block
-
-
-def byte_xor(byte1, byte2):
-    parts = []
-    for b1, b2 in zip(byte1, byte2):
-        parts.append(bytes([b1 ^ b2]))
-    return b''.join(parts)
-
-
 def communication(connection):
     mode_of_operation = connection.recv(3).decode('UTF-8')
     encrypted_key = connection.recv(16)
@@ -55,18 +42,18 @@ def communication(connection):
     if mode_of_operation == 'ecb':
         while True:
             decrypted_block = aes.decrypt(connection.recv(BLOCK_SIZE)).decode()
-            print(unpad(decrypted_block), end='')
-            if unpad(decrypted_block) != decrypted_block:
+            print(util.unpad(decrypted_block, BLOCK_SIZE), end='')
+            if util.unpad(decrypted_block, BLOCK_SIZE) != decrypted_block:
                 print()
                 break
     else:
         cfb_cipher = IV
         while True:
             next_cipher = connection.recv(BLOCK_SIZE)
-            decrypted_block = byte_xor(aes.encrypt(cfb_cipher), next_cipher).decode()
+            decrypted_block = util.byte_xor(aes.encrypt(cfb_cipher), next_cipher).decode()
             cfb_cipher = next_cipher
-            print(unpad(decrypted_block), end='')
-            if unpad(decrypted_block) != decrypted_block:
+            print(util.unpad(decrypted_block, BLOCK_SIZE), end='')
+            if util.unpad(decrypted_block, BLOCK_SIZE) != decrypted_block:
                 print()
                 break
 
