@@ -49,6 +49,8 @@ def communication(server_sock, b_sock):
         current_block = file.read(BLOCK_SIZE)
 
         if len(current_block) < BLOCK_SIZE:
+            if len(current_block) == 0:
+                break
             end_of_file = True
             current_block = util.pad(current_block, BLOCK_SIZE)
 

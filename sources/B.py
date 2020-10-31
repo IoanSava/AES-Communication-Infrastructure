@@ -28,6 +28,34 @@ def socket_bind(host, port, sock):
         socket_bind(host, port, sock)
 
 
+def ecb_decryption(connection, aes):
+    while True:
+        block = connection.recv(BLOCK_SIZE)
+        if block == b'':
+            print()
+            break
+        decrypted_block = aes.decrypt(block).decode()
+        print(util.unpad(decrypted_block, BLOCK_SIZE), end='')
+        if util.unpad(decrypted_block, BLOCK_SIZE) != decrypted_block:
+            print()
+            break
+
+
+def cfb_decryption(connection, aes):
+    cfb_cipher = IV
+    while True:
+        next_cipher = connection.recv(BLOCK_SIZE)
+        if next_cipher == b'':
+            print()
+            break
+        decrypted_block = util.byte_xor(aes.encrypt(cfb_cipher), next_cipher).decode()
+        cfb_cipher = next_cipher
+        print(util.unpad(decrypted_block, BLOCK_SIZE), end='')
+        if util.unpad(decrypted_block, BLOCK_SIZE) != decrypted_block:
+            print()
+            break
+
+
 def communication(connection):
     mode_of_operation = connection.recv(3).decode('UTF-8')
     encrypted_key = connection.recv(16)
@@ -40,22 +68,9 @@ def communication(connection):
 
     aes = AES.new(key, AES.MODE_ECB)
     if mode_of_operation == 'ecb':
-        while True:
-            decrypted_block = aes.decrypt(connection.recv(BLOCK_SIZE)).decode()
-            print(util.unpad(decrypted_block, BLOCK_SIZE), end='')
-            if util.unpad(decrypted_block, BLOCK_SIZE) != decrypted_block:
-                print()
-                break
+        ecb_decryption(connection, aes)
     else:
-        cfb_cipher = IV
-        while True:
-            next_cipher = connection.recv(BLOCK_SIZE)
-            decrypted_block = util.byte_xor(aes.encrypt(cfb_cipher), next_cipher).decode()
-            cfb_cipher = next_cipher
-            print(util.unpad(decrypted_block, BLOCK_SIZE), end='')
-            if util.unpad(decrypted_block, BLOCK_SIZE) != decrypted_block:
-                print()
-                break
+        cfb_decryption(connection, aes)
 
 
 def socket_accept(sock):
