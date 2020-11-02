@@ -4,7 +4,7 @@ from sources import util
 
 from Crypto.Cipher import AES
 
-K3 = b'secret_key_16bit'
+Kp = b'secret_key_16bit'
 IV = b'initial_vector_f'
 BLOCK_SIZE = 16  # Bytes
 
@@ -29,12 +29,11 @@ def choose_mode_of_operation():
 def communication(server_sock, b_sock):
     mode_of_operation = choose_mode_of_operation()
     b_sock.send(mode_of_operation.encode())
-    server_sock.send(mode_of_operation.encode())
 
     encrypted_key = server_sock.recv(16)
     b_sock.send(encrypted_key)
 
-    aes = AES.new(K3, AES.MODE_ECB)
+    aes = AES.new(Kp, AES.MODE_ECB)
     key = aes.decrypt(encrypted_key)
 
     # waiting for B to initiate communication

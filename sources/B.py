@@ -4,7 +4,7 @@ from sources import util
 
 from Crypto.Cipher import AES
 
-K3 = b'secret_key_16bit'
+Kp = b'secret_key_16bit'
 IV = b'initial_vector_f'
 BLOCK_SIZE = 16  # Bytes
 
@@ -60,7 +60,7 @@ def communication(connection):
     mode_of_operation = connection.recv(3).decode('UTF-8')
     encrypted_key = connection.recv(16)
 
-    aes = AES.new(K3, AES.MODE_ECB)
+    aes = AES.new(Kp, AES.MODE_ECB)
     key = aes.decrypt(encrypted_key)
 
     # initiate the communication

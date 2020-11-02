@@ -4,7 +4,7 @@ import sys
 
 from Crypto.Cipher import AES
 
-K3 = b'secret_key_16bit'
+Kp = b'secret_key_16bit'
 
 
 def socket_create():
@@ -27,18 +27,12 @@ def socket_bind(host, port, sock):
 
 
 def communication(connection):
-    K1 = os.urandom(16)  # ECB
-    K2 = os.urandom(16)  # CFB
-    mode_of_operation = connection.recv(3).decode('UTF-8')
+    K = os.urandom(16)
 
     # send encrypted key to A
-    aes = AES.new(K3, AES.MODE_ECB)
-    if mode_of_operation == 'ecb':
-        print('Send encrypted key for ECB')
-        connection.send(aes.encrypt(K1))
-    else:
-        print('Send encrypted key for CFB')
-        connection.send(aes.encrypt(K2))
+    aes = AES.new(Kp, AES.MODE_ECB)
+    print('Send encrypted key')
+    connection.send(aes.encrypt(K))
 
 
 def socket_accept(sock):
