@@ -1,6 +1,6 @@
 # AES-Communication-Infrastructure
 
-## How tu run
+## How to run
 
 python KM.py host port
 
